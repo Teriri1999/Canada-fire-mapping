@@ -55,7 +55,7 @@ import {
   sampleContext, standardise, standardiseInto, windowStarts,
 // ?v= must match index.html's. A fresh app.js next to a cached pipeline.js is
 // worse than both being stale: the numeric core and its caller would disagree.
-} from "./pipeline.js?v=3";
+} from "./pipeline.js?v=4";
 
 const MODEL_DIR = "./model/";
 const ORT_ASSET_PATH = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/";
@@ -502,7 +502,7 @@ const SCENE_PRESETS = Object.freeze({
     observed: [0.977, 0.478, 0.746, 0.993, 0.428, 1, 0.599, 1, 0.099, 0.99, 1, 0.999],
     note: "British Columbia · 12 acquisitions while the fire was burning · NBAC final perimeter 6,429 ha · pre scene from the previous season",
   },
-  // Two events outside the NBAC archive, kept for what they test rather
+  // Three events outside the NBAC archive, kept for what they test rather
   // than for their size.
   CA_2026_BC_K70748: {
     label: "2026 · BC K70748 · 61,009 ha", group: "Independently checked",
@@ -511,6 +511,26 @@ const SCENE_PRESETS = Object.freeze({
     pre: "2025-08-22", target: "2026-09-16",
     note: "British Columbia · BC Wildfire Service airborne-GPS perimeter · "
         + "union recall 0.912, precision 0.961 after attributing neighbouring fires",
+  },
+  // C40983 is the larger of the two neighbours that sat inside K70748's
+  // buffered ROI and had to be attributed before its false positives could be
+  // counted — attributing them moved K70748's precision 0.829 -> 0.961. It is
+  // worth its own preset for that reason: the page can show that the burn the
+  // K70748 run had to set aside is a real scar the model maps on its own.
+  // Perimeter, centre and extent come from the BC Wildfire Service current
+  // fire polygon (PROT_CURRENT_FIRE_POLYS_SP, tracked 2026-09-04); the scar
+  // spans 62 x 64 km, so 71.68 km is the smallest window that holds it with a
+  // margin. The fire was called Under Control on 2026-09-04, and 2026-09-16 is
+  // the clearest post acquisition after that (cs_mean 0.93, no nodata) — the
+  // same datatake the K70748 preset opens on, these two fires being 45 km apart.
+  CA_2026_BC_C40983: {
+    label: "2026 · BC C40983 Pear Lake · 165,909 ha", group: "Independently checked",
+    latitude: 51.1892, longitude: -121.7129,
+    detailKm: 71.68,
+    pre: "2025-08-22", target: "2026-09-16",
+    note: "British Columbia · BC Wildfire Service perimeter 165,909 ha, "
+        + "lightning-caused, ignited 2026-07-18, Under Control 2026-09-04 · "
+        + "a neighbour of K70748, attributed during that validation",
   },
   ID_2026_KETAPANG: {
     label: "2026 · Ketapang, Kalimantan", group: "Independently checked",
