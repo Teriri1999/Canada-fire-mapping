@@ -194,6 +194,12 @@ credentials of its own:
   "has not completed the Google verification process". The page's setup panel
   spells this out.
 
+The page's setup panel is a seven-step walkthrough of exactly that, each step
+linking the console page it refers to. It opens by itself until both fields are
+saved, and it prints the page's real `location.origin` in the step that needs
+it, because an origin typed from memory is the usual reason a first sign-in
+fails.
+
 Earth Engine bills the pixel computation to whichever project they name. The
 inference is on their own machine, so it costs nothing and sends nothing.
 

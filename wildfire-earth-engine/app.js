@@ -392,6 +392,7 @@ for (const id of [
   "lag-summary", "engine-summary", "burned-summary", "pixel-summary",
   "obscured-summary", "obscured-detail", "window-cost", "pre-canvas", "current-canvas",
   "probability-canvas", "mask-canvas", "download-mask", "download-stack",
+  "setup-help", "page-origin",
 ]) {
   elements[id.replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = document.querySelector(`#${id}`);
 }
@@ -1464,6 +1465,15 @@ elements.downloadStack.addEventListener("click", downloadSourceStack);
 
 elements.projectId.value = localStorage.getItem("flamenet-ee-project") || elements.projectId.value;
 elements.clientId.value = localStorage.getItem("flamenet-ee-client-id") || "";
+
+// The origin Google wants in Authorized JavaScript origins is this page's own,
+// and getting it wrong is the usual reason a first sign-in fails. Print the
+// real one rather than asking the reader to construct it.
+elements.pageOrigin.textContent = location.origin;
+// Open the setup walkthrough for anyone who has not been through it. A reader
+// who already has both fields saved does not need it in their way.
+elements.setupHelp.open = !(elements.projectId.value && elements.clientId.value);
+
 populateScenePresets();
 initializeMap();
 
