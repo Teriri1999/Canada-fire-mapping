@@ -392,7 +392,6 @@ for (const id of [
   "lag-summary", "engine-summary", "burned-summary", "pixel-summary",
   "obscured-summary", "obscured-detail", "window-cost", "pre-canvas", "current-canvas",
   "probability-canvas", "mask-canvas", "download-mask", "download-stack",
-  "model-summary",
 ]) {
   elements[id.replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = document.querySelector(`#${id}`);
 }
@@ -440,11 +439,6 @@ async function loadMeta() {
   if (!response.ok) throw new Error(`model_meta.json is missing (${response.status}).`);
   const meta = await response.json();
   state.meta = meta;
-  elements.modelSummary.textContent =
-    `${meta.name} · ${meta.in_ch_per_phase} channels per phase (${meta.bands.join(", ")}) · `
-    + `${meta.params.toLocaleString()} parameters · ${meta.patch_size} px patches, `
-    + `stride ${meta.stride} · trained ${meta.train_years[0]}-${meta.train_years.at(-1)}, `
-    + `validated ${meta.val_years.join("/")}, tested ${meta.test_years.join("/")}`;
   elements.threshold.value = meta.threshold;
   elements.thresholdValue.value = Number(meta.threshold).toFixed(2);
   return meta;

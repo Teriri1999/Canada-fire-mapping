@@ -11,7 +11,6 @@
    rest of this repository is ever pruned, that file has to come along or the
    page loads unstyled. */
 .selection-summary{grid-template-columns:repeat(5,1fr)}
-.tool-intro .model-line{margin:18px 0 0;max-width:680px;color:var(--muted);font-size:11px;font-weight:400;letter-spacing:.02em;text-transform:none;line-height:1.7}
 .band-key span:last-child b{color:var(--orange)}
 @media(max-width:1180px){.selection-summary{grid-template-columns:repeat(3,1fr)}.selection-summary article:nth-child(3){border-right:0}.selection-summary article:nth-child(-n+3){border-bottom:1px solid var(--line)}}
 @media(max-width:900px){.selection-summary{grid-template-columns:1fr 1fr}.selection-summary article:nth-child(2n){border-right:0}.selection-summary article:nth-child(-n+4){border-bottom:1px solid var(--line)}}
