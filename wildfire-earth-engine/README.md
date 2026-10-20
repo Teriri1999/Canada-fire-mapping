@@ -78,24 +78,33 @@ because nothing larger fits: the archive's biggest scar spans 157 km against
 the widest window's 81.92 km, and a preset that cannot show the whole fire is
 a bad demonstration.
 
-Under **During the fire** are 15 more, from the `CA_S1S2_2000ha` progression
-set (2022–2025). Every other preset pairs a pre scene with a post scene from
-months after the fire stopped; these pair it with the middle acquisition of
-the event's own during-fire series, so the model is asked for a partial scar
-under smoke instead of a settled one, and the area it returns is a fraction of
-the NBAC final perimeter **by construction** — the fire was still growing.
-Only the S2 half of that set is used. Its predictions came from the checkpoint
-this page deploys; the S1 half came from FLAMENet's SAR model, which is a
+Under **During the fire** are 15 more events, from the `CA_S1S2_2000ha`
+progression set (2022–2025), carrying **308 Sentinel-2 acquisitions** between
+them — 12 to 35 each. Every other preset pairs a pre scene with a post scene
+from months after the fire stopped; these pair it with a scene taken while the
+fire was still burning. Selecting one reveals an **Acquisition** select
+listing that event's whole series, opening on the middle one, and the page
+runs a single acquisition at a time.
+
+So the area returned is a fraction of the NBAC final perimeter **by
+construction** — the fire had not finished burning when the scene was taken.
+Only the S2 half of that set is used: its predictions came from the checkpoint
+this page deploys, while the S1 half came from FLAMENet's SAR model, a
 different model in a different project.
+
+Each acquisition is labelled with the share of the fire that was not under
+cloud on that date, measured by the progression run. That number spans **0% to
+100%** across the set — `CA_2025_MB_70` has a date where nothing at all was
+observable — and the model will return almost nothing for the low ones. The
+scenes are kept as they stand rather than filtered to the clear ones, so the
+label is what separates "cloud" from "the model missed the fire".
 
 Two things those presets need that the others do not. They narrow the target
 search to ±5 days, because their scenes are days apart while the scar grows
 and a wider search returns a different stage of the fire; and they narrow the
 pre search to ±10 days, because several of their pre scenes are May
 acquisitions at 60°N and a wider window reaches snow, which Cloud Score+ is
-happy to call clear. The scenes are taken as they stand in that set, cloud
-included: `CA_2025_NT_193` on 2025-08-10 had only 13% of the fire observable,
-and the preset says so rather than letting a thin result read as a miss.
+happy to call clear.
 
 For each fire the coordinates are the centre of the burned bounding box, the
 window is the smallest slider step that holds that box with a margin, and both

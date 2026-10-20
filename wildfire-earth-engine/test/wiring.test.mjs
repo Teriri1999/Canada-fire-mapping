@@ -109,6 +109,32 @@ test("the preset table the dropdown is built from is well formed", () => {
     assert.ok(p.pre < p.target, `${id} pre ${p.pre} does not precede target ${p.target}`);
   }
 
+  // A during-fire preset carries its whole acquisition series. The target has
+  // to be one of them, or the acquisition select would open on a date it does
+  // not list and the two controls would disagree about what is being run.
+  let withSeries = 0;
+  for (const [id, p] of entries) {
+    if (!p.dates) {
+      assert.equal(p.observed, undefined, `${id} has observed without dates`);
+      continue;
+    }
+    withSeries++;
+    assert.ok(p.dates.length > 1, `${id} has a series of ${p.dates.length}`);
+    for (const date of p.dates) {
+      assert.match(date, /^\d{4}-\d{2}-\d{2}$/, `${id} has a bad date ${date}`);
+    }
+    assert.deepEqual([...p.dates].sort(), p.dates, `${id}'s dates are not in order`);
+    assert.equal(new Set(p.dates).size, p.dates.length, `${id} repeats a date`);
+    assert.ok(p.dates.includes(p.target),
+      `${id}.target ${p.target} is not one of its ${p.dates.length} acquisitions`);
+    assert.equal(p.observed.length, p.dates.length,
+      `${id} has ${p.observed.length} observed fractions for ${p.dates.length} dates`);
+    for (const seen of p.observed) {
+      assert.ok(seen >= 0 && seen <= 1, `${id} has an observed fraction of ${seen}`);
+    }
+  }
+  assert.ok(withSeries >= 15, `only ${withSeries} presets carry a series`);
+
   // A preset may narrow the date searches, but only to a value those selects
   // actually offer: assigning an absent value to a <select> is a silent no-op
   // in the DOM, so the previous preset's radius would quietly carry over.
