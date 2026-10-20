@@ -151,6 +151,25 @@ test("the preset dropdown is populated from app.js, not hand-written in the HTML
   assert.match(appSource, /populateScenePresets\(\);/);
 });
 
+test("the three local assets carry one and the same cache-busting version", () => {
+  // GitHub Pages serves these with max-age=600, so without ?v= a browser can
+  // hold a stale app.js next to a fresh index.html — which is exactly how a
+  // deploy's new presets fail to appear. A fresh app.js beside a cached
+  // pipeline.js would be worse still, so all three move together.
+  const found = {
+    "style.css": htmlSource.match(/href="\.\/style\.css\?v=(\d+)"/),
+    "app.js": htmlSource.match(/src="\.\/app\.js\?v=(\d+)"/),
+    "pipeline.js": appSource.match(/from "\.\/pipeline\.js\?v=(\d+)"/),
+  };
+  for (const [name, m] of Object.entries(found)) {
+    assert.ok(m, `${name} is loaded without a ?v= cache buster`);
+  }
+  const versions = Object.values(found).map(m => m[1]);
+  assert.equal(new Set(versions).size, 1,
+    `the ?v= versions disagree: ${JSON.stringify(
+      Object.fromEntries(Object.entries(found).map(([k, m]) => [k, m[1]])))}`);
+});
+
 test("the page loads the model from its own directory, not the other demo's", () => {
   // ../wildfire-demo/model.onnx is a different model for a different page.
   assert.ok(!appSource.includes("wildfire-demo"),

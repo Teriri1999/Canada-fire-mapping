@@ -53,7 +53,9 @@ import {
   blendWindow, blitChannel, chunkEdges, cloudKeepMask, convertChannel, extractPatch,
   falseColour, gaussianWeight, jointRamp, normaliseBlend, removeSmallComponents,
   sampleContext, standardise, standardiseInto, windowStarts,
-} from "./pipeline.js";
+// ?v= must match index.html's. A fresh app.js next to a cached pipeline.js is
+// worse than both being stale: the numeric core and its caller would disagree.
+} from "./pipeline.js?v=2";
 
 const MODEL_DIR = "./model/";
 const ORT_ASSET_PATH = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/";
