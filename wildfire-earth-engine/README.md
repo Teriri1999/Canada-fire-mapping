@@ -68,6 +68,23 @@ the fire stopped, so the gap between the two is routinely 14 months and can be
 Every preset carries the pre date the dataset loader itself selected for that
 fire, so the presets run on exactly the pair the reported metrics came from.
 
+### The preset list
+
+The dropdown offers 35 fires from the NBAC archive's 2024 and 2025 tiles,
+grouped by burned area and spanning **117 ha to 170,576 ha** across ten
+provinces and territories, plus K70748 and Ketapang, which are there for what
+they test rather than for their size. Nothing above ~170,000 ha is offered
+because nothing larger fits: the archive's biggest scar spans 157 km against
+the widest window's 81.92 km, and a preset that cannot show the whole fire is
+a bad demonstration.
+
+For each fire the coordinates are the centre of the burned bounding box, the
+window is the smallest slider step that holds that box with a margin, and both
+dates are the acquisitions `src/datasets/s2_fire.py` selects under its
+clearest-scene rule — none of it typed in by hand. The options are built by
+`app.js` from `SCENE_PRESETS`; `index.html` carries an empty `<select>`, so the
+two cannot drift.
+
 ### One window, because the model had one in training
 
 The orange box is both things at once: the extent segmented at 20 m in
@@ -126,15 +143,16 @@ about:
   reflectance is standardised *in place* and the false-colour panels are
   rasterised to their canvases before that happens.
 
-For reference, the largest preset (71.68 km, 3584 px) is 16 Earth Engine
-requests totalling ~140 MB, 729 model windows and ~525 MB resident. That is tens
-of seconds on WebGPU and minutes on WebAssembly.
+For reference, the widest presets (81.92 km, 4096 px) are 16 Earth Engine
+requests, 961 model windows and the full 537 MB of `float32` planes. That is
+tens of seconds on WebGPU and minutes on WebAssembly. A 71.68 km / 3584 px run,
+measured, moved ~140 MB of GeoTIFF across its 16 requests.
 
 ### A caution about the numbers at this extent
 
-On `CA_2025_SK_433` with the window matching the fire, this page reports
-**234,774 ha against an NBAC reference of 170,576 ha** — a 38% over-prediction.
-The predictions do reach the window edges, so the window is not the limit. Three
+On `CA_2025_SK_433` at a 71.68 km window, this page reported **234,774 ha
+against an NBAC reference of 170,576 ha** — a 38% over-prediction. The
+predictions reached the window edges, so the window was not the limit. Three
 things plausibly contribute and none has been separated yet: the page's ±20-day
 clarity-first search picked a pre-fire scene (2024-08-26) that is not the one the
 archive used (2024-09-15); that scene carries cloud over part of a window this
@@ -142,6 +160,10 @@ wide; and a 72 km box around one fire contains neighbouring fires that are not i
 that tile's mask — on the K70748 validation fire, attributing neighbours moved
 precision from 0.829 to 0.961. Treat the hectare figure as a demonstration, not
 as a measurement.
+
+That measurement is from a 71.68 km window, which clipped the fire: the scar
+spans 74.9 km, so the preset now opens at 81.92 km and the over-prediction has
+not been re-measured at the wider extent. Expect it to be larger, not smaller.
 
 ### The one approximation
 
@@ -220,7 +242,10 @@ npm test
 - **`test/wiring.test.mjs`** checks that `app.js` and `index.html` still agree
   about every element id, and that no control of the upstream page survives in
   half-edited form. A renamed id otherwise fails at run time, in a handler,
-  possibly only on an error path.
+  possibly only on an error path. It also evaluates `SCENE_PRESETS` out of
+  `app.js` and checks every preset: dates parse and are in order, and the
+  window is a value the slider can hold — a preset that is off the 2.56 km step
+  would be snapped on selection and quietly segment a different area.
 - **`test/endtoend.test.mjs`** runs the deployment's own window loop over the
   real ONNX graphs under `onnxruntime-web` and compares the burned area to what
   `scripts/predict_fire.py` reports for the same tile. It needs a fixture of a

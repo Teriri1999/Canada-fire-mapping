@@ -75,50 +75,285 @@ const NODATA = -9999;
 // Phase-prefixed band names in the order both requests return them.
 const PHASES = ["pre", "post"];
 
+// Preset fires, all from the NBAC Canada archive's 2024 and 2025 tiles. Every
+// number here is what the research loader derives for the tile rather than
+// something typed in: the centre of the burned bounding box, the smallest
+// slider step that holds that box with a margin, and the two acquisitions
+// src/datasets/s2_fire.py selects under its clearest-scene rule. The set spans
+// the size range a window can actually hold, 117 ha to 170,576 ha, across ten
+// provinces and territories. Nothing larger is offered because nothing larger
+// fits: the archive's biggest scar spans 157 km against the widest window's
+// 81.92 km, and a preset that cannot show the whole fire is a bad demonstration.
 const SCENE_PRESETS = Object.freeze({
-  // Test-split fires (2025, held out of training and validation). Dates are the
-  // scenes src/datasets/s2_fire.py itself selects for these tiles, so the demo
-  // runs on exactly the pair the reported test metrics were computed from.
+  // Over 100,000 ha
   CA_2025_SK_433: {
-    label: "2025 · Saskatchewan · 170,576 ha",
+    label: "2025 · SK 433 · 170,576 ha", group: "Over 100,000 ha",
     latitude: 54.8299, longitude: -102.3205,
-    detailKm: 71.68,
+    detailKm: 81.92,
     pre: "2024-09-15", target: "2025-11-04",
-    note: "NBAC test split · boreal forest · model never saw 2025",
+    note: "Saskatchewan · NBAC reference perimeter 170,576 ha",
   },
-  CA_2025_AB_480: {
-    label: "2025 · Alberta · 119,527 ha",
-    latitude: 56.9163, longitude: -113.6742,
-    detailKm: 58.88,
-    pre: "2024-08-11", target: "2025-10-15",
-    note: "NBAC test split · mixed boreal · model never saw 2025",
+  CA_2025_MB_432: {
+    label: "2025 · MB 432 · 163,472 ha", group: "Over 100,000 ha",
+    latitude: 55.9014, longitude: -100.8577,
+    detailKm: 81.92,
+    pre: "2024-06-09", target: "2025-09-29",
+    note: "Manitoba · NBAC reference perimeter 163,472 ha",
   },
   CA_2025_ON_594: {
-    label: "2025 · Ontario · 159,734 ha",
-    latitude: 52.8423, longitude: -93.8993,
-    detailKm: 69.12,
+    label: "2025 · ON 594 · 159,734 ha", group: "Over 100,000 ha",
+    latitude: 52.8422, longitude: -93.8993,
+    detailKm: 74.24,
     pre: "2024-06-10", target: "2025-08-31",
-    note: "NBAC test split · boreal shield · model never saw 2025",
+    note: "Ontario · NBAC reference perimeter 159,734 ha",
   },
-  // The supervisor's independent check fire: outside the NBAC splits entirely,
-  // validated against a BC Wildfire Service airborne-GPS perimeter.
+  CA_2024_NT_53: {
+    label: "2024 · NT 53 · 136,935 ha", group: "Over 100,000 ha",
+    latitude: 60.8278, longitude: -117.9208,
+    detailKm: 66.56,
+    pre: "2023-06-09", target: "2024-09-29",
+    note: "Northwest Territories · NBAC reference perimeter 136,935 ha",
+  },
+  CA_2025_AB_480: {
+    label: "2025 · AB 480 · 119,527 ha", group: "Over 100,000 ha",
+    latitude: 56.9162, longitude: -113.6741,
+    detailKm: 64.0,
+    pre: "2024-08-11", target: "2025-10-15",
+    note: "Alberta · NBAC reference perimeter 119,527 ha",
+  },
+  // 30,000 – 100,000 ha
+  CA_2024_AB_24: {
+    label: "2024 · AB 24 · 81,143 ha", group: "30,000 – 100,000 ha",
+    latitude: 59.7966, longitude: -118.5372,
+    detailKm: 56.32,
+    pre: "2023-07-04", target: "2024-10-06",
+    note: "Alberta · NBAC reference perimeter 81,143 ha",
+  },
+  CA_2025_BC_503: {
+    label: "2025 · BC 503 · 59,312 ha", group: "30,000 – 100,000 ha",
+    latitude: 59.4362, longitude: -120.2324,
+    detailKm: 51.2,
+    pre: "2024-07-16", target: "2025-10-04",
+    note: "British Columbia · NBAC reference perimeter 59,312 ha",
+  },
+  CA_2025_SK_354: {
+    label: "2025 · SK 354 · 56,380 ha", group: "30,000 – 100,000 ha",
+    latitude: 56.7579, longitude: -109.2857,
+    detailKm: 53.76,
+    pre: "2024-06-29", target: "2025-10-09",
+    note: "Saskatchewan · NBAC reference perimeter 56,380 ha",
+  },
+  CA_2024_YT_416: {
+    label: "2024 · YT 416 · 42,263 ha", group: "30,000 – 100,000 ha",
+    latitude: 62.3587, longitude: -140.0666,
+    detailKm: 38.4,
+    pre: "2023-06-02", target: "2024-10-01",
+    note: "Yukon · NBAC reference perimeter 42,263 ha",
+  },
+  CA_2025_NT_190: {
+    label: "2025 · NT 190 · 32,137 ha", group: "30,000 – 100,000 ha",
+    latitude: 64.2227, longitude: -120.1901,
+    detailKm: 40.96,
+    pre: "2024-06-02", target: "2025-09-27",
+    note: "Northwest Territories · NBAC reference perimeter 32,137 ha",
+  },
+  // 10,000 – 30,000 ha
+  CA_2025_NT_193: {
+    label: "2025 · NT 193 · 19,936 ha", group: "10,000 – 30,000 ha",
+    latitude: 60.2148, longitude: -117.0583,
+    detailKm: 35.84,
+    pre: "2024-06-01", target: "2025-09-26",
+    note: "Northwest Territories · NBAC reference perimeter 19,936 ha",
+  },
+  CA_2025_SK_312: {
+    label: "2025 · SK 312 · 18,616 ha", group: "10,000 – 30,000 ha",
+    latitude: 58.3016, longitude: -102.2367,
+    detailKm: 35.84,
+    pre: "2024-06-30", target: "2025-09-13",
+    note: "Saskatchewan · NBAC reference perimeter 18,616 ha",
+  },
+  CA_2024_NL_566: {
+    label: "2024 · NL 566 · 14,804 ha", group: "10,000 – 30,000 ha",
+    latitude: 53.9746, longitude: -66.8837,
+    detailKm: 33.28,
+    pre: "2023-06-03", target: "2024-08-11",
+    note: "Newfoundland and Labrador · NBAC reference perimeter 14,804 ha",
+  },
+  CA_2024_PC_101: {
+    label: "2024 · PC 101 · 14,117 ha", group: "10,000 – 30,000 ha",
+    latitude: 61.4329, longitude: -125.956,
+    detailKm: 23.04,
+    pre: "2023-06-28", target: "2024-10-08",
+    note: "Parks Canada · NBAC reference perimeter 14,117 ha",
+  },
+  CA_2024_BC_166: {
+    label: "2024 · BC 166 · 11,410 ha", group: "10,000 – 30,000 ha",
+    latitude: 53.0419, longitude: -121.3502,
+    detailKm: 28.16,
+    pre: "2023-06-07", target: "2024-09-01",
+    note: "British Columbia · NBAC reference perimeter 11,410 ha",
+  },
+  // 3,000 – 10,000 ha
+  CA_2025_ON_630: {
+    label: "2025 · ON 630 · 9,013 ha", group: "3,000 – 10,000 ha",
+    latitude: 52.3126, longitude: -93.0557,
+    detailKm: 25.6,
+    pre: "2024-06-10", target: "2025-09-13",
+    note: "Ontario · NBAC reference perimeter 9,013 ha",
+  },
+  CA_2024_BC_246: {
+    label: "2024 · BC 246 · 4,545 ha", group: "3,000 – 10,000 ha",
+    latitude: 49.0611, longitude: -120.537,
+    detailKm: 17.92,
+    pre: "2023-06-06", target: "2024-08-29",
+    note: "British Columbia · NBAC reference perimeter 4,545 ha",
+  },
+  CA_2025_NT_175: {
+    label: "2025 · NT 175 · 4,405 ha", group: "3,000 – 10,000 ha",
+    latitude: 66.899, longitude: -133.5455,
+    detailKm: 17.92,
+    pre: "2024-06-02", target: "2025-08-26",
+    note: "Northwest Territories · NBAC reference perimeter 4,405 ha",
+  },
+  CA_2025_YT_381: {
+    label: "2025 · YT 381 · 3,582 ha", group: "3,000 – 10,000 ha",
+    latitude: 61.6, longitude: -134.9913,
+    detailKm: 17.92,
+    pre: "2024-06-07", target: "2025-11-04",
+    note: "Yukon · NBAC reference perimeter 3,582 ha",
+  },
+  CA_2024_QC_510: {
+    label: "2024 · QC 510 · 3,251 ha", group: "3,000 – 10,000 ha",
+    latitude: 51.8883, longitude: -76.4416,
+    detailKm: 17.92,
+    pre: "2023-06-05", target: "2024-08-28",
+    note: "Quebec · NBAC reference perimeter 3,251 ha",
+  },
+  // 1,000 – 3,000 ha
+  CA_2025_NT_176: {
+    label: "2025 · NT 176 · 2,639 ha", group: "1,000 – 3,000 ha",
+    latitude: 67.3469, longitude: -135.1873,
+    detailKm: 17.92,
+    pre: "2024-06-01", target: "2025-10-14",
+    note: "Northwest Territories · NBAC reference perimeter 2,639 ha",
+  },
+  CA_2025_MB_32: {
+    label: "2025 · MB 32 · 2,070 ha", group: "1,000 – 3,000 ha",
+    latitude: 55.7276, longitude: -92.8489,
+    detailKm: 17.92,
+    pre: "2024-06-10", target: "2025-10-11",
+    note: "Manitoba · NBAC reference perimeter 2,070 ha",
+  },
+  CA_2024_BC_227: {
+    label: "2024 · BC 227 · 2,052 ha", group: "1,000 – 3,000 ha",
+    latitude: 53.1222, longitude: -124.4631,
+    detailKm: 17.92,
+    pre: "2023-06-07", target: "2024-11-18",
+    note: "British Columbia · NBAC reference perimeter 2,052 ha",
+  },
+  CA_2025_ON_644: {
+    label: "2025 · ON 644 · 2,003 ha", group: "1,000 – 3,000 ha",
+    latitude: 53.594, longitude: -90.6464,
+    detailKm: 17.92,
+    pre: "2024-06-17", target: "2025-09-30",
+    note: "Ontario · NBAC reference perimeter 2,003 ha",
+  },
+  CA_2024_YT_446: {
+    label: "2024 · YT 446 · 1,801 ha", group: "1,000 – 3,000 ha",
+    latitude: 62.8554, longitude: -138.4788,
+    detailKm: 17.92,
+    pre: "2023-07-06", target: "2024-10-01",
+    note: "Yukon · NBAC reference perimeter 1,801 ha",
+  },
+  // 300 – 1,000 ha
+  CA_2024_QC_1516: {
+    label: "2024 · QC 1516 · 930 ha", group: "300 – 1,000 ha",
+    latitude: 54.1131, longitude: -73.3452,
+    detailKm: 17.92,
+    pre: "2023-06-02", target: "2024-08-10",
+    note: "Quebec · NBAC reference perimeter 930 ha",
+  },
+  CA_2025_BC_548: {
+    label: "2025 · BC 548 · 665 ha", group: "300 – 1,000 ha",
+    latitude: 49.3078, longitude: -116.9902,
+    detailKm: 17.92,
+    pre: "2024-06-07", target: "2025-10-15",
+    note: "British Columbia · NBAC reference perimeter 665 ha",
+  },
+  CA_2024_YT_427: {
+    label: "2024 · YT 427 · 527 ha", group: "300 – 1,000 ha",
+    latitude: 65.368, longitude: -137.6736,
+    detailKm: 17.92,
+    pre: "2023-06-04", target: "2024-10-06",
+    note: "Yukon · NBAC reference perimeter 527 ha",
+  },
+  CA_2025_NT_178: {
+    label: "2025 · NT 178 · 408 ha", group: "300 – 1,000 ha",
+    latitude: 65.5665, longitude: -129.7154,
+    detailKm: 17.92,
+    pre: "2024-06-01", target: "2025-09-04",
+    note: "Northwest Territories · NBAC reference perimeter 408 ha",
+  },
+  CA_2024_AB_1084: {
+    label: "2024 · AB 1084 · 327 ha", group: "300 – 1,000 ha",
+    latitude: 53.497, longitude: -119.7945,
+    detailKm: 17.92,
+    pre: "2023-06-06", target: "2024-08-02",
+    note: "Alberta · NBAC reference perimeter 327 ha",
+  },
+  // Under 300 ha
+  CA_2024_YT_428: {
+    label: "2024 · YT 428 · 261 ha", group: "Under 300 ha",
+    latitude: 64.5262, longitude: -140.2175,
+    detailKm: 17.92,
+    pre: "2023-06-04", target: "2024-10-01",
+    note: "Yukon · NBAC reference perimeter 261 ha",
+  },
+  CA_2024_BC_252: {
+    label: "2024 · BC 252 · 222 ha", group: "Under 300 ha",
+    latitude: 50.0906, longitude: -122.3547,
+    detailKm: 17.92,
+    pre: "2023-06-04", target: "2024-09-16",
+    note: "British Columbia · NBAC reference perimeter 222 ha",
+  },
+  CA_2025_SK_338: {
+    label: "2025 · SK 338 · 194 ha", group: "Under 300 ha",
+    latitude: 59.4192, longitude: -104.3611,
+    detailKm: 17.92,
+    pre: "2024-06-08", target: "2025-09-06",
+    note: "Saskatchewan · NBAC reference perimeter 194 ha",
+  },
+  CA_2025_NT_235: {
+    label: "2025 · NT 235 · 123 ha", group: "Under 300 ha",
+    latitude: 67.4407, longitude: -128.8989,
+    detailKm: 17.92,
+    pre: "2024-06-02", target: "2025-09-25",
+    note: "Northwest Territories · NBAC reference perimeter 123 ha",
+  },
+  CA_2025_AB_486: {
+    label: "2025 · AB 486 · 117 ha", group: "Under 300 ha",
+    latitude: 59.1094, longitude: -115.2929,
+    detailKm: 17.92,
+    pre: "2024-06-15", target: "2025-08-14",
+    note: "Alberta · NBAC reference perimeter 117 ha",
+  },
+  // Two events outside the NBAC archive, kept for what they test rather
+  // than for their size.
   CA_2026_BC_K70748: {
-    label: "2026 · BC · K70748 · 61,009 ha perimeter",
+    label: "2026 · BC K70748 · 61,009 ha", group: "Independently checked",
     latitude: 51.2716, longitude: -122.3370,
     detailKm: 56.32,
     pre: "2025-08-22", target: "2026-09-16",
-    note: "Independent validation fire · no NBAC mask · union recall 0.912, "
-        + "precision 0.961 after attributing neighbouring fires",
+    note: "British Columbia · BC Wildfire Service airborne-GPS perimeter · "
+        + "union recall 0.912, precision 0.961 after attributing neighbouring fires",
   },
-  // Out of domain on purpose: tropical peat, a hemisphere and a biome away from
-  // anything in training. The S2 model transfers here and the result is
-  // corroborated by dNBR; there is no burned-area reference for the period.
   ID_2026_KETAPANG: {
-    label: "2026 · Ketapang, Kalimantan · out of domain",
+    label: "2026 · Ketapang, Kalimantan", group: "Independently checked",
     latitude: -1.7500, longitude: 110.1300,
     detailKm: 35.84,
     pre: "2025-10-07", target: "2026-09-02",
-    note: "Out-of-domain transfer · tropical peatland · dNBR-corroborated, "
+    note: "West Kalimantan, Indonesia · tropical peatland, a hemisphere and a "
+        + "biome from anything the model was fitted on · dNBR-corroborated, "
         + "no burned-area reference exists for Aug-Oct 2026",
   },
 });
@@ -306,6 +541,40 @@ function detailPixels() {
 function markSceneCustom(message = "Custom scene · coordinates, dates or window adjusted manually.") {
   elements.scenePreset.value = "";
   elements.presetMeta.textContent = message;
+}
+
+// The fire the page opens on. Not the largest — a first run should finish in a
+// reasonable time, and this is the one event here with an independent perimeter
+// to compare against.
+const DEFAULT_PRESET = "CA_2026_BC_K70748";
+
+/** Fill the preset <select> from SCENE_PRESETS, grouped by burned area.
+ *
+ * The options are built here rather than written into index.html so the two
+ * cannot drift: with this many fires, a hand-maintained list would eventually
+ * offer a value SCENE_PRESETS has no entry for, and applyScenePreset would
+ * silently do nothing.
+ */
+function populateScenePresets() {
+  const custom = document.createElement("option");
+  custom.value = "";
+  custom.disabled = true;
+  custom.textContent = "Custom scene";
+  elements.scenePreset.append(custom);
+
+  let group = null;
+  for (const [eventId, preset] of Object.entries(SCENE_PRESETS)) {
+    if (!group || group.label !== preset.group) {
+      group = document.createElement("optgroup");
+      group.label = preset.group;
+      elements.scenePreset.append(group);
+    }
+    const option = document.createElement("option");
+    option.value = eventId;
+    option.textContent = preset.label;
+    group.append(option);
+  }
+  elements.scenePreset.value = DEFAULT_PRESET;
 }
 
 function applyScenePreset(eventId) {
@@ -1201,6 +1470,7 @@ elements.downloadStack.addEventListener("click", downloadSourceStack);
 
 elements.projectId.value = localStorage.getItem("flamenet-ee-project") || elements.projectId.value;
 elements.clientId.value = localStorage.getItem("flamenet-ee-client-id") || "";
+populateScenePresets();
 initializeMap();
 
 loadMeta()

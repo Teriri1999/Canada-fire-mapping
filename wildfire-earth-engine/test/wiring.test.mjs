@@ -69,6 +69,72 @@ test("the ids app.js requests are not stale leftovers of the upstream page", () 
   }
 });
 
+/** SCENE_PRESETS, evaluated out of app.js's source.
+ *
+ * app.js cannot be imported here — it reads the DOM at module scope — but the
+ * preset table is a plain object literal, so lifting it out and evaluating it
+ * is safe and keeps the test honest about the real text.
+ */
+function scenePresets() {
+  const start = appSource.indexOf("const SCENE_PRESETS = Object.freeze({");
+  assert.ok(start > 0, "could not find SCENE_PRESETS in app.js");
+  const end = appSource.indexOf("\n});\n", start);
+  // end + 2 stops just past the closing brace, dropping Object.freeze's ")".
+  const literal = appSource.slice(appSource.indexOf("{", start), end + 2);
+  return new Function(`return ${literal}`)();
+}
+
+test("the preset table the dropdown is built from is well formed", () => {
+  const presets = scenePresets();
+  const entries = Object.entries(presets);
+  // The page is meant to offer a spread of fire sizes, not a handful.
+  assert.ok(entries.length >= 30, `only ${entries.length} presets`);
+
+  const STEP = 2.56, MIN = 17.92, MAX = 81.92;
+  for (const [id, p] of entries) {
+    for (const key of ["label", "group", "note", "pre", "target"]) {
+      assert.equal(typeof p[key], "string", `${id}.${key} is not a string`);
+      assert.ok(p[key].length, `${id}.${key} is empty`);
+    }
+    assert.ok(Number.isFinite(p.latitude) && Math.abs(p.latitude) <= 90, `${id} latitude`);
+    assert.ok(Number.isFinite(p.longitude) && Math.abs(p.longitude) <= 180, `${id} longitude`);
+    // The window must be a value the slider can actually hold, or selecting
+    // the preset would snap it and quietly segment a different area.
+    assert.ok(p.detailKm >= MIN && p.detailKm <= MAX, `${id} detailKm ${p.detailKm} out of range`);
+    assert.ok(Math.abs((p.detailKm - MIN) / STEP - Math.round((p.detailKm - MIN) / STEP)) < 1e-9,
+      `${id} detailKm ${p.detailKm} is not on the slider's ${STEP} km step`);
+    for (const key of ["pre", "target"]) {
+      assert.match(p[key], /^\d{4}-\d{2}-\d{2}$/, `${id}.${key} is not an ISO date`);
+    }
+    assert.ok(p.pre < p.target, `${id} pre ${p.pre} does not precede target ${p.target}`);
+  }
+
+  // Groups are rendered as <optgroup> in iteration order, so a group's entries
+  // have to be contiguous or it would appear twice in the dropdown.
+  const seen = new Set();
+  let last = null;
+  for (const [, p] of entries) {
+    if (p.group !== last) {
+      assert.ok(!seen.has(p.group), `group "${p.group}" is split across the table`);
+      seen.add(p.group);
+      last = p.group;
+    }
+  }
+
+  const fallback = appSource.match(/const DEFAULT_PRESET = "([^"]+)"/);
+  assert.ok(fallback, "no DEFAULT_PRESET in app.js");
+  assert.ok(fallback[1] in presets, `DEFAULT_PRESET ${fallback[1]} is not a preset`);
+});
+
+test("the preset dropdown is populated from app.js, not hand-written in the HTML", () => {
+  // A hand-maintained <option> list would drift from SCENE_PRESETS and offer
+  // values applyScenePreset silently ignores.
+  const select = htmlSource.match(/<select id="scene-preset"[^>]*>([\s\S]*?)<\/select>/);
+  assert.ok(select, "index.html has no scene-preset select");
+  assert.equal(select[1].trim(), "", "scene-preset still carries static options");
+  assert.match(appSource, /populateScenePresets\(\);/);
+});
+
 test("the page loads the model from its own directory, not the other demo's", () => {
   // ../wildfire-demo/model.onnx is a different model for a different page.
   assert.ok(!appSource.includes("wildfire-demo"),

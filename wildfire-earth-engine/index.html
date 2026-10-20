@@ -56,15 +56,9 @@
       </div>
 
       <div class="example-picker">
-        <label for="scene-preset"><span>Events from the NBAC Canada dataset and the validation fires</span>
-          <select id="scene-preset">
-            <option value="" disabled>Custom scene</option>
-            <option value="CA_2025_SK_433">2025 · Saskatchewan · 170,576 ha · test split</option>
-            <option value="CA_2025_AB_480">2025 · Alberta · 119,527 ha · test split</option>
-            <option value="CA_2025_ON_594">2025 · Ontario · 159,734 ha · test split</option>
-            <option value="CA_2026_BC_K70748" selected>2026 · BC · K70748 · independent validation</option>
-            <option value="ID_2026_KETAPANG">2026 · Ketapang, Kalimantan · out of domain</option>
-          </select>
+        <label for="scene-preset"><span>35 fires from the NBAC Canada archive, 117 ha to 170,576 ha, plus two independently checked events</span>
+          <!-- Options are built by app.js from SCENE_PRESETS; see there. -->
+          <select id="scene-preset"></select>
         </label>
         <p id="preset-meta">Loading presets…</p>
       </div>
