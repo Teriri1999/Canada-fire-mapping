@@ -78,6 +78,25 @@ because nothing larger fits: the archive's biggest scar spans 157 km against
 the widest window's 81.92 km, and a preset that cannot show the whole fire is
 a bad demonstration.
 
+Under **During the fire** are 15 more, from the `CA_S1S2_2000ha` progression
+set (2022–2025). Every other preset pairs a pre scene with a post scene from
+months after the fire stopped; these pair it with the middle acquisition of
+the event's own during-fire series, so the model is asked for a partial scar
+under smoke instead of a settled one, and the area it returns is a fraction of
+the NBAC final perimeter **by construction** — the fire was still growing.
+Only the S2 half of that set is used. Its predictions came from the checkpoint
+this page deploys; the S1 half came from FLAMENet's SAR model, which is a
+different model in a different project.
+
+Two things those presets need that the others do not. They narrow the target
+search to ±5 days, because their scenes are days apart while the scar grows
+and a wider search returns a different stage of the fire; and they narrow the
+pre search to ±10 days, because several of their pre scenes are May
+acquisitions at 60°N and a wider window reaches snow, which Cloud Score+ is
+happy to call clear. The scenes are taken as they stand in that set, cloud
+included: `CA_2025_NT_193` on 2025-08-10 had only 13% of the fire observable,
+and the preset says so rather than letting a thin result read as a miss.
+
 For each fire the coordinates are the centre of the burned bounding box, the
 window is the smallest slider step that holds that box with a margin, and both
 dates are the acquisitions `src/datasets/s2_fire.py` selects under its

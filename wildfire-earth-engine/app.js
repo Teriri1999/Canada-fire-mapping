@@ -337,6 +337,135 @@ const SCENE_PRESETS = Object.freeze({
     pre: "2024-06-15", target: "2025-08-14",
     note: "Alberta · NBAC reference perimeter 117 ha",
   },
+  // During the fire — the one regime the post-fire presets above have
+  // none of. Each pairs the event's own pre scene with an acquisition
+  // from the middle of its progression series, while the fire was still
+  // burning, so the model is asked for a partial scar under smoke rather
+  // than a settled one. From the CA_S1S2_2000ha progression set; the S2
+  // half of it was produced by the checkpoint this page deploys. The pre
+  // search is narrowed to +/-10 days because several of these pre scenes
+  // are May acquisitions at 60 N, and a wider window reaches snow that
+  // Cloud Score+ is happy to call clear.
+  CA_2023_PC_361_DURING: {
+    label: "2023 · PC 361 · 2023-08-02", group: "During the fire",
+    latitude: 59.2173, longitude: -113.2207,
+    detailKm: 81.92,
+    pre: "2023-05-17", target: "2023-08-02",
+    preWindow: 10, targetWindow: 5,
+    note: "Parks Canada · acquisition 18 of 35 while the fire was burning · NBAC final perimeter 162,453 ha · pre scene from the previous season · final perimeter spans 89 km, past the widest window",
+  },
+  CA_2023_AB_310_DURING: {
+    label: "2023 · AB 310 · 2023-08-21", group: "During the fire",
+    latitude: 59.8895, longitude: -118.6325,
+    detailKm: 81.92,
+    pre: "2023-05-10", target: "2023-08-21",
+    preWindow: 10, targetWindow: 5,
+    note: "Alberta · acquisition 15 of 28 while the fire was burning · NBAC final perimeter 101,337 ha · pre scene from the same-year spring · final perimeter spans 153 km, past the widest window",
+  },
+  CA_2024_YT_416_DURING: {
+    label: "2024 · YT 416 · 2024-07-21", group: "During the fire",
+    latitude: 62.3587, longitude: -140.0661,
+    detailKm: 38.4,
+    pre: "2024-05-31", target: "2024-07-21",
+    preWindow: 10, targetWindow: 5,
+    note: "Yukon · acquisition 12 of 23 while the fire was burning · NBAC final perimeter 42,263 ha · pre scene from the previous season",
+  },
+  CA_2022_NT_98_DURING: {
+    label: "2022 · NT 98 · 2022-07-25", group: "During the fire",
+    latitude: 65.1607, longitude: -119.1042,
+    detailKm: 43.52,
+    pre: "2021-09-08", target: "2022-07-25",
+    preWindow: 10, targetWindow: 5,
+    note: "Northwest Territories · acquisition 7 of 12 while the fire was burning · NBAC final perimeter 40,244 ha · pre scene from the previous summer",
+  },
+  CA_2022_NT_96_DURING: {
+    label: "2022 · NT 96 · 2022-07-16", group: "During the fire",
+    latitude: 62.0701, longitude: -115.2483,
+    detailKm: 43.52,
+    pre: "2022-06-19", target: "2022-07-16",
+    preWindow: 10, targetWindow: 5,
+    note: "Northwest Territories · acquisition 11 of 20 while the fire was burning · NBAC final perimeter 36,708 ha · pre scene from the previous season · cloud left only 49% of the fire observable on this date",
+  },
+  CA_2024_NT_32_DURING: {
+    label: "2024 · NT 32 · 2024-08-07", group: "During the fire",
+    latitude: 64.5449, longitude: -116.1325,
+    detailKm: 35.84,
+    pre: "2024-07-16", target: "2024-08-07",
+    preWindow: 10, targetWindow: 5,
+    note: "Northwest Territories · acquisition 8 of 14 while the fire was burning · NBAC final perimeter 33,242 ha · pre scene from the previous season",
+  },
+  CA_2025_MB_70_DURING: {
+    label: "2025 · MB 70 · 2025-08-29", group: "During the fire",
+    latitude: 51.672, longitude: -95.6825,
+    detailKm: 35.84,
+    pre: "2025-07-02", target: "2025-08-29",
+    preWindow: 10, targetWindow: 5,
+    note: "Manitoba · acquisition 10 of 18 while the fire was burning · NBAC final perimeter 32,324 ha · pre scene from the previous season",
+  },
+  CA_2023_AB_693_DURING: {
+    label: "2023 · AB 693 · 2023-09-04", group: "During the fire",
+    latitude: 57.7139, longitude: -115.8412,
+    detailKm: 35.84,
+    pre: "2023-06-01", target: "2023-09-04",
+    preWindow: 10, targetWindow: 5,
+    note: "Alberta · acquisition 9 of 16 while the fire was burning · NBAC final perimeter 29,574 ha · pre scene from the previous season",
+  },
+  CA_2025_NT_193_DURING: {
+    label: "2025 · NT 193 · 2025-08-10", group: "During the fire",
+    latitude: 60.2147, longitude: -117.0581,
+    detailKm: 35.84,
+    pre: "2025-05-12", target: "2025-08-10",
+    preWindow: 10, targetWindow: 5,
+    note: "Northwest Territories · acquisition 10 of 18 while the fire was burning · NBAC final perimeter 19,945 ha · pre scene from the same-year spring · cloud left only 13% of the fire observable on this date",
+  },
+  CA_2025_AB_503_DURING: {
+    label: "2025 · AB 503 · 2025-08-05", group: "During the fire",
+    latitude: 59.4351, longitude: -119.8807,
+    detailKm: 46.08,
+    pre: "2024-08-30", target: "2025-08-05",
+    preWindow: 10, targetWindow: 5,
+    note: "Alberta · acquisition 13 of 25 while the fire was burning · NBAC final perimeter 17,678 ha · pre scene from the previous summer · cloud left only 58% of the fire observable on this date",
+  },
+  CA_2024_YT_445_DURING: {
+    label: "2024 · YT 445 · 2024-07-20", group: "During the fire",
+    latitude: 62.5487, longitude: -139.6687,
+    detailKm: 23.04,
+    pre: "2024-05-31", target: "2024-07-20",
+    preWindow: 10, targetWindow: 5,
+    note: "Yukon · acquisition 9 of 16 while the fire was burning · NBAC final perimeter 14,442 ha · pre scene from the previous season",
+  },
+  CA_2024_PC_101_DURING: {
+    label: "2024 · PC 101 · 2024-08-19", group: "During the fire",
+    latitude: 61.4322, longitude: -125.9577,
+    detailKm: 23.04,
+    pre: "2024-06-28", target: "2024-08-19",
+    preWindow: 10, targetWindow: 5,
+    note: "Parks Canada · acquisition 16 of 30 while the fire was burning · NBAC final perimeter 14,114 ha · pre scene from the previous season",
+  },
+  CA_2023_BC_850_DURING: {
+    label: "2023 · BC 850 · 2023-08-26", group: "During the fire",
+    latitude: 55.4531, longitude: -124.2583,
+    detailKm: 38.4,
+    pre: "2023-06-07", target: "2023-08-26",
+    preWindow: 10, targetWindow: 5,
+    note: "British Columbia · acquisition 14 of 26 while the fire was burning · NBAC final perimeter 11,780 ha · pre scene from the previous season",
+  },
+  CA_2024_SK_682_DURING: {
+    label: "2024 · SK 682 · 2024-08-11", group: "During the fire",
+    latitude: 54.0802, longitude: -102.7831,
+    detailKm: 20.48,
+    pre: "2023-09-01", target: "2024-08-11",
+    preWindow: 10, targetWindow: 5,
+    note: "Saskatchewan · acquisition 8 of 15 while the fire was burning · NBAC final perimeter 10,721 ha · pre scene from the previous summer",
+  },
+  CA_2022_BC_423_DURING: {
+    label: "2022 · BC 423 · 2022-09-04", group: "During the fire",
+    latitude: 49.3354, longitude: -119.8189,
+    detailKm: 17.92,
+    pre: "2022-07-11", target: "2022-09-04",
+    preWindow: 10, targetWindow: 5,
+    note: "British Columbia · acquisition 7 of 12 while the fire was burning · NBAC final perimeter 6,429 ha · pre scene from the previous season · cloud left only 60% of the fire observable on this date",
+  },
   // Two events outside the NBAC archive, kept for what they test rather
   // than for their size.
   CA_2026_BC_K70748: {
@@ -543,6 +672,12 @@ function markSceneCustom(message = "Custom scene · coordinates, dates or window
 // to compare against.
 const DEFAULT_PRESET = "CA_2026_BC_K70748";
 
+// The search radii a preset falls back to, matching index.html's selected
+// options. A preset that does not narrow them must still reset them, or the
+// previous selection's narrower window would silently carry over.
+const DEFAULT_PRE_WINDOW = 20;
+const DEFAULT_TARGET_WINDOW = 10;
+
 /** Fill the preset <select> from SCENE_PRESETS, grouped by burned area.
  *
  * The options are built here rather than written into index.html so the two
@@ -580,6 +715,13 @@ function applyScenePreset(eventId) {
   elements.detailSize.value = preset.detailKm;
   elements.preDate.value = preset.pre;
   elements.targetDate.value = preset.target;
+  // A preset may narrow the searches. The during-fire ones do: their scenes
+  // are days apart while the scar is still growing, so a wide target search
+  // would return a different stage of the fire, and several of their pre
+  // scenes are May acquisitions far enough north that a wide pre search
+  // reaches snow, which Cloud Score+ scores as perfectly clear.
+  elements.preWindow.value = String(preset.preWindow ?? DEFAULT_PRE_WINDOW);
+  elements.targetWindow.value = String(preset.targetWindow ?? DEFAULT_TARGET_WINDOW);
   elements.presetMeta.textContent = `${eventId} · ${preset.note}`;
   updateMapSelection(false);
   state.map.fitBounds(squareBounds(preset.latitude, preset.longitude, preset.detailKm),

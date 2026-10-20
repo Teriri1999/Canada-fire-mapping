@@ -109,6 +109,22 @@ test("the preset table the dropdown is built from is well formed", () => {
     assert.ok(p.pre < p.target, `${id} pre ${p.pre} does not precede target ${p.target}`);
   }
 
+  // A preset may narrow the date searches, but only to a value those selects
+  // actually offer: assigning an absent value to a <select> is a silent no-op
+  // in the DOM, so the previous preset's radius would quietly carry over.
+  for (const [field, key] of [["pre-window", "preWindow"],
+                              ["target-window", "targetWindow"]]) {
+    const select = htmlSource.match(
+      new RegExp(`<select id="${field}">([\\s\\S]*?)</select>`));
+    assert.ok(select, `index.html has no ${field} select`);
+    const offered = new Set([...select[1].matchAll(/value="(\d+)"/g)].map(m => Number(m[1])));
+    for (const [id, p] of entries) {
+      if (p[key] === undefined) continue;
+      assert.ok(offered.has(p[key]),
+        `${id}.${key} is ${p[key]}, which ${field} does not offer (${[...offered]})`);
+    }
+  }
+
   // Groups are rendered as <optgroup> in iteration order, so a group's entries
   // have to be contiguous or it would appear twice in the dropdown.
   const seen = new Set();
