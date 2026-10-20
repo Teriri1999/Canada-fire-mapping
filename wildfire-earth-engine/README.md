@@ -194,11 +194,18 @@ credentials of its own:
   "has not completed the Google verification process". The page's setup panel
   spells this out.
 
-The page's setup panel is a seven-step walkthrough of exactly that, each step
+The page's setup panel is an eight-step walkthrough of exactly that, each step
 linking the console page it refers to. It opens by itself until both fields are
 saved, and it prints the page's real `location.origin` in the step that needs
 it, because an origin typed from memory is the usual reason a first sign-in
 fails.
+
+Two things that panel has to spell out because the console does not. The OAuth
+settings moved to **Google Auth Platform**; a project that has never configured
+it shows "Google Auth platform not configured yet" and a *Get Started* button,
+and until that is done the **Audience** and **Clients** pages do not exist — so
+the test-user step reads as missing rather than as blocked. And *Test users*
+only appears for an **External** audience.
 
 Earth Engine bills the pixel computation to whichever project they name. The
 inference is on their own machine, so it costs nothing and sends nothing.
